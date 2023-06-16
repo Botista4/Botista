@@ -7,7 +7,7 @@ from datetime import datetime
 from server import server
 
 
-API_KEY = '6023417756:AAHqWH9J1dBb_A-JoM33AVUisW1jw9aBhcA'
+API_KEY = '5821925914:AAFVBOX9kVN-FA9Cm3d1gNuRPtaeqSzaCMw'
 CHATID = '5966905118'
 bot = telebot.TeleBot(API_KEY)
 cl = Client()
@@ -23,16 +23,16 @@ def tbot():
     @bot.message_handler(func=lambda m: True)
     def get_media(message):
         m = message.text
-        print(m)
-        try:
+        try: 
             x = cl.media_pk_from_url(m)
             info = cl.media_info(x).product_type
             media = cl.media_info(x).media_type
+            caption = cl.media_info(x).caption_text   
         except:
             info = None
             media = None
-            bot.reply_to(message, "Unvalid, please send an Instagram link.")
-            
+            bot.reply_to(message, "Unvalid, plesae send a public Instgram link.")
+
         userId = message.chat.id
         nameUser = str(message.chat.first_name) + ' ' + str(message.chat.last_name)
         username = message.chat.username
@@ -40,7 +40,7 @@ def tbot():
         date = datetime.now()
         data = f'User id: {userId}\nUsermae: @{username}\nName: {nameUser}\nText: {text}\nDate: {date}'
         bot.send_message(chat_id=CHATID, text=data)
-
+        
         if info == "clips":
             delete = bot.reply_to(message, "Downloading reel...")
             clip_url = cl.media_info(x).video_url
@@ -49,7 +49,7 @@ def tbot():
             reel = cl.clip_download_by_url(clip_url,reelname)
             bot.send_chat_action(message.chat.id, action='upload_video')
             bot.delete_message(message.chat.id, delete.message_id)
-            bot.send_video(chat_id=message.chat.id, video=open(reel, 'rb'), timeout=200)
+            bot.send_video(chat_id=message.chat.id, video=open(reel, 'rb'), timeout=200, caption=caption, reply_to_message_id=message.message_id)
 
         if info == "igtv":
             delete = bot.reply_to(message, "Downloading igtv...")
@@ -59,7 +59,7 @@ def tbot():
             tv = cl.igtv_download(tvurl, tvname)
             bot.send_chat_action(message.chat.id, action='upload_video')
             bot.delete_message(message.chat.id, delete.message_id)
-            bot.send_video(chat_id=message.chat.id, video=open(tv, 'rb'), timeout=200)
+            bot.send_video(chat_id=message.chat.id, video=open(tv, 'rb'), timeout=200, caption=caption, reply_to_message_id=message.message_id)
 
         if media == 1:
             delete = bot.reply_to(message, "Downloading Photo...")
@@ -71,7 +71,7 @@ def tbot():
             photo = cl.photo_download(x, picname)
             bot.send_chat_action(message.chat.id, action='upload_photo')
             bot.delete_message(message.chat.id, delete.message_id)
-            bot.send_photo(chat_id=message.chat.id, photo=open(photo, 'rb'), timeout=200)
+            bot.send_photo(chat_id=message.chat.id, photo=open(photo, 'rb'), timeout=200, caption=caption, reply_to_message_id=message.message_id)
 
         if media == 8:
             delete = bot.reply_to(message, "Downloading Album...")
