@@ -11,6 +11,7 @@ API_KEY = '5821925914:AAFVBOX9kVN-FA9Cm3d1gNuRPtaeqSzaCMw'
 CHATID = '5966905118'
 bot = telebot.TeleBot(API_KEY)
 cl = Client()
+cl.login('botistareal', 'botist44')
 server()
 
 def tbot():
