@@ -1,17 +1,17 @@
 import telebot
 from instagrapi import Client
 from datetime import datetime
-from server import server
+# from server import server
 
 
-API_KEY = '6262533922:AAFPpfpfTkVbmqPuLoLGC_aZsgC3qfMZrrw'
+API_KEY = '6262533922:AAF4kC8ZJMxfJZdPbVCayTVEpocDyMsu2gE'
 CHATID = '5966905118'
 
 bot = telebot.TeleBot(API_KEY)
 
 cl = Client()
-cl.login('botistareal', 'botist44')
-server()
+# cl.login('botistareal', 'botist44')
+# server()
 
 def tbot():
     def chat(message):
@@ -68,7 +68,7 @@ def tbot():
             media = minfo.media_type
             likes = "Likes: " + f'{minfo.like_count:,}'
             caption = minfo.caption_text + "\n\n" + likes
-            views = "Views: " + f'{minfo.view_count:,}'
+            views = "Plays: " + f'{minfo.play_count:,}'
         except:
             info = None
             media = None
