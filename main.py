@@ -1,13 +1,10 @@
 import telebot
 from instagrapi import Client
-import random
-import os
-import shutil
 from datetime import datetime
 from server import server
 
 
-API_KEY = '6262533922:AAFPpfpfTkVbmqPuLoLGC_aZsgC3qfMZrrw'
+API_KEY = '5821925914:AAFVBOX9kVN-FA9Cm3d1gNuRPtaeqSzaCMw'
 CHATID = '5966905118'
 bot = telebot.TeleBot(API_KEY)
 cl = Client()
@@ -53,7 +50,7 @@ def tbot():
                 m = message.text.replace("/pfp @", "")
                 x = cl.user_info_by_username(m)
                 url = x.profile_pic_url_hd
-                caption = "Name: " + x.full_name + "\nUsername: " + m
+                caption = "Name: " + x.full_name + "\nUsername: " + m + "\nBio:\n" + x.biography
                 bot.send_photo(message.chat.id, url, caption, reply_to_message_id=message.message_id)
             except:
                 bot.reply_to(message, "Unvalid username.")
@@ -64,9 +61,12 @@ def tbot():
         m = message.text
         try: 
             x = cl.media_pk_from_url(m)
-            info = cl.media_info(x).product_type
-            media = cl.media_info(x).media_type
-            caption = cl.media_info(x).caption_text   
+            minfo = cl.media_info(x)
+            info = minfo.product_type
+            media = minfo.media_type
+            likes = "Likes: " + f'{minfo.like_count:,}'
+            caption = minfo.caption_text + "\n\n" + likes
+            views = "Views: " + f'{minfo.view_count:,}'
         except:
             info = None
             media = None
@@ -75,54 +75,33 @@ def tbot():
         chat(message)
 
         if info == "clips":
-            delete = bot.reply_to(message, "Downloading reel...")
+            caption = caption + "\n" + views
             clip_url = cl.media_info(x).video_url
-            n = str(random.randint(0,19))
-            reelname = "reel" + n
-            reel = cl.clip_download_by_url(clip_url,reelname)
             bot.send_chat_action(message.chat.id, action='upload_video')
-            bot.delete_message(message.chat.id, delete.message_id)
-            bot.send_video(chat_id=message.chat.id, video=open(reel, 'rb'), timeout=200, caption=caption, reply_to_message_id=message.message_id)
+            bot.send_video(chat_id=message.chat.id, video=clip_url, timeout=200, caption=caption, reply_to_message_id=message.message_id)
 
         if info == "igtv":
-            delete = bot.reply_to(message, "Downloading igtv...")
-            n = str(random.randint(0,19))
-            tvname = "tv" + n
+            caption = caption + "\n" + views
             tvurl = cl.media_info(x).video_url
-            tv = cl.igtv_download(tvurl, tvname)
             bot.send_chat_action(message.chat.id, action='upload_video')
-            bot.delete_message(message.chat.id, delete.message_id)
-            bot.send_video(chat_id=message.chat.id, video=open(tv, 'rb'), timeout=200, caption=caption, reply_to_message_id=message.message_id)
+            bot.send_video(chat_id=message.chat.id, video=tvurl, timeout=200, caption=caption, reply_to_message_id=message.message_id)
 
         if media == 1:
-            delete = bot.reply_to(message, "Downloading Photo...")
-            n = str(random.randint(0,19))
-            picname = "pic" + n
-            if os.path.exists(picname):
-                shutil.rmtree(picname)
-            os.mkdir(picname)
-            photo = cl.photo_download(x, picname)
+            thumbnail = minfo.thumbnail_url
             bot.send_chat_action(message.chat.id, action='upload_photo')
-            bot.delete_message(message.chat.id, delete.message_id)
-            bot.send_photo(chat_id=message.chat.id, photo=open(photo, 'rb'), timeout=200, caption=caption, reply_to_message_id=message.message_id)
+            bot.send_photo(chat_id=message.chat.id, photo=thumbnail, timeout=200, caption=caption, reply_to_message_id=message.message_id)
 
         if media == 8:
-            delete = bot.reply_to(message, "Downloading Album...")
-            n = str(random.randint(0,19))
-            pname = "p" + n
-            if os.path.exists(pname):
-                shutil.rmtree(pname)
-            os.mkdir(pname)
-            album = cl.album_download(x, folder=pname)
-            bot.delete_message(message.chat.id, delete.message_id)
-            for item in album:
-                item = str(item)
-                if ".heic" in item or ".webp" in item or ".jpg" in item or ".jpeg" in item or ".png" in item:
-                    bot.send_chat_action(message.chat.id, action='upload_photo',)
-                    bot.send_photo(chat_id=message.chat.id, photo=open(item, 'rb'), timeout=200)
-                elif ".mp4" in item or ".mov" in item:
+            bot.reply_to(message, text=caption)
+            for f in range(len(minfo.resources)):
+                index = minfo.resources[f]
+                mtype = index.media_type
+                if mtype == 1:
+                    bot.send_chat_action(message.chat.id, action='upload_photo')
+                    bot.send_photo(message.chat.id, index.thumbnail_url)
+                if mtype == 2:
                     bot.send_chat_action(message.chat.id, action='upload_video')
-                    bot.send_video(chat_id=message.chat.id, video=open(item, 'rb'), timeout=200)
+                    bot.send_video(message.chat.id, index.video_url)
 
     print('Bot is running...')
     bot.infinity_polling()
