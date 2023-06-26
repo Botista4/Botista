@@ -1,8 +1,8 @@
+import time
 import telebot
 from instagrapi import Client
 from datetime import datetime
 from server import server
-
 
 API_KEY = '6262533922:AAF6R3TIjcvBU_oo_wMoMgokFf7d60uLXig'
 CHATID = '5966905118'
@@ -110,7 +110,14 @@ def tbot():
                     bot.send_video(message.chat.id, index.video_url)
 
     print('Bot is running...')
-    bot.infinity_polling()
+    while True:
+        try:
+            bot.infinity_polling()
+        except Exception as ex:
+            print("Error:\n")
+            print(ex)
+            time.sleep(10)
+            bot.infinity_polling()
 
 if __name__ == "__main__":
     tbot()
