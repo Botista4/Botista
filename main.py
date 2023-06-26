@@ -10,7 +10,6 @@ CHATID = '5966905118'
 bot = telebot.TeleBot(API_KEY)
 
 cl = Client()
-cl.login('botistareal', 'botist44')
 server()
 
 def tbot():
@@ -43,20 +42,27 @@ def tbot():
 
     @bot.message_handler(commands=['pfp'])
     def start(message):
-        bot.send_chat_action(message.chat.id, action='upload_photo',)
-        if message.text == "/pfp":
-            smsg = "Send command with the username.\nExample: /pfp @atefshaban"
-            bot.reply_to(message, smsg)
-        if "@" in message.text:
-            try:
-                bot.send_chat_action(message.chat.id, 'upload_photo')
-                m = message.text.replace("/pfp @", "")
-                x = cl.user_info_by_username(m)
-                url = x.profile_pic_url_hd
-                caption = "Name: " + x.full_name + "\nUsername: " + m + "\nBio:\n" + x.biography
-                bot.send_photo(message.chat.id, url, caption, reply_to_message_id=message.message_id)
-            except:
-                bot.reply_to(message, "Unvalid username.")
+        try:
+            cl.login('botistareal', 'botist44')
+            bot.send_chat_action(message.chat.id, action='upload_photo',)
+            if message.text == "/pfp":
+                smsg = "Send command with the username.\nExample: /pfp @atefshaban"
+                bot.reply_to(message, smsg)
+            if "@" in message.text:
+                try:
+                    bot.send_chat_action(message.chat.id, 'upload_photo')
+                    m = message.text.replace("/pfp @", "")
+                    x = cl.user_info_by_username(m)
+                    url = x.profile_pic_url_hd
+                    caption = "Name: " + x.full_name + "\nUsername: " + m + "\nBio:\n" + x.biography
+                    bot.send_photo(message.chat.id, url, caption, reply_to_message_id=message.message_id)
+                except:
+                    bot.reply_to(message, "Unvalid username.")
+        except Exception as ex:
+            bot.reply_to(message, "Sorry, this feature cannot be used at this moment.")
+            print("Error: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(ex)
+            
         chat(message)
 
     @bot.message_handler(func=lambda m: True)
@@ -114,7 +120,7 @@ def tbot():
         try:
             bot.infinity_polling()
         except Exception as ex:
-            print("Error:\n")
+            print("Error: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print(ex)
             time.sleep(10)
             bot.infinity_polling()
