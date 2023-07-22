@@ -1,16 +1,19 @@
+import os
 import time
 import telebot
 from instagrapi import Client
 from datetime import datetime
 from server import server
 
-API_KEY = '6262533922:AAF6R3TIjcvBU_oo_wMoMgokFf7d60uLXig'
-CHATID = '5966905118'
+API_KEY = os.environ.get('API_KEY')
+CHATID = os.environ.get('CHATID')
+USERNAME = os.environ.get('USERNAME')
+PASSWORD = os.environ.get('PASSWORD')
 
 bot = telebot.TeleBot(API_KEY)
 
 cl = Client()
-cl.login('botistareal', 'botistada123')
+cl.login(USERNAME, PASSWORD)
 server()
 
 def tbot():
